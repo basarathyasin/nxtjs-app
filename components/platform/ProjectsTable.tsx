@@ -267,6 +267,26 @@ function ProjectFormDrawer({
 		}
 	};
 
+	const handleNextClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		void goNext();
+	};
+
+	const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		setStepIndex((current) => Math.max(current - 1, 0));
+	};
+
+	const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		if (!isLastStep) {
+			event.preventDefault();
+			void goNext();
+			return;
+		}
+
+		void form.handleSubmit(submitForm)(event);
+	};
+
 	const submitForm = (values: LeadFormValues) => {
 		const parsedValues = leadFormSchema.parse(values);
 
@@ -299,7 +319,7 @@ function ProjectFormDrawer({
 				</div>
 
 				<form
-					onSubmit={form.handleSubmit(submitForm)}
+					onSubmit={handleFormSubmit}
 					className="flex min-h-0 flex-1 flex-col"
 				>
 					<div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
@@ -312,7 +332,7 @@ function ProjectFormDrawer({
 						<Button
 							type="button"
 							variant="outline"
-							onClick={() => setStepIndex((current) => Math.max(current - 1, 0))}
+							onClick={handleBackClick}
 							disabled={stepIndex === 0}
 							className="gap-2 sm:flex-1"
 						>
@@ -325,7 +345,11 @@ function ProjectFormDrawer({
 								Submit
 							</Button>
 						) : (
-							<Button type="button" onClick={goNext} className="gap-2 sm:flex-1">
+							<Button
+								type="button"
+								onClick={handleNextClick}
+								className="gap-2 sm:flex-1"
+							>
 								Next
 								<ArrowRight className="size-4" />
 							</Button>

@@ -74,13 +74,13 @@ export function SignupForm({
 	return (
 		<div className={cn("flex flex-col", className)} {...props}>
 			<SuccessModal open={open} setOpen={setOpen} />
-			<Card className="rounded-xl border-[#E2E8F0] bg-white shadow-sm">
+			<Card className="rounded-xl border-[#E2E8F0] bg-white shadow-sm dark:border-white/10 dark:bg-[#101214]">
 				<CardHeader className="gap-1.5 px-5 pt-5 text-center">
-					<CardTitle className="text-xl font-semibold text-[#111827]">
+					<CardTitle className="text-xl font-semibold text-[#111827] dark:text-white">
 						Create your account
 					</CardTitle>
 
-					<CardDescription className="text-sm text-[#64748B]">
+					<CardDescription className="text-sm text-[#64748B] dark:text-zinc-400">
 						Enter your details to get started.
 					</CardDescription>
 				</CardHeader>
@@ -89,14 +89,17 @@ export function SignupForm({
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<FieldGroup className="gap-3.5">
 							<Field>
-								<FieldLabel htmlFor="name" className="text-[#334155]">
+								<FieldLabel
+									htmlFor="name"
+									className="text-[#334155] dark:text-zinc-200"
+								>
 									Full Name
 								</FieldLabel>
 
 								<Input
 									id="name"
 									placeholder="John Doe"
-									className="h-10 border-[#CBD5E1] bg-white px-3"
+									className="h-10 border-[#CBD5E1] bg-white px-3 text-[#111827] placeholder:text-[#94A3B8] dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder:text-zinc-500"
 									{...register("name")}
 								/>
 
@@ -108,7 +111,10 @@ export function SignupForm({
 							</Field>
 
 							<Field>
-								<FieldLabel htmlFor="email" className="text-[#334155]">
+								<FieldLabel
+									htmlFor="email"
+									className="text-[#334155] dark:text-zinc-200"
+								>
 									Email
 								</FieldLabel>
 
@@ -116,7 +122,7 @@ export function SignupForm({
 									id="email"
 									type="email"
 									placeholder="m@example.com"
-									className="h-10 border-[#CBD5E1] bg-white px-3"
+									className="h-10 border-[#CBD5E1] bg-white px-3 text-[#111827] placeholder:text-[#94A3B8] dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder:text-zinc-500"
 									{...register("email")}
 								/>
 
@@ -129,21 +135,27 @@ export function SignupForm({
 
 							<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 								<Field>
-									<FieldLabel htmlFor="password" className="text-[#334155]">
+									<FieldLabel
+										htmlFor="password"
+										className="text-[#334155] dark:text-zinc-200"
+									>
 										Password
 									</FieldLabel>
 									<div className="relative">
 										<Input
 											id="password"
 											type={showPassword ? "text" : "password"}
-											className="h-10 border-[#CBD5E1] bg-white px-3 pr-10"
+											className="h-10 border-[#CBD5E1] bg-white px-3 pr-10 text-[#111827] dark:border-white/15 dark:bg-white/10 dark:text-white"
 											{...register("password")}
 										/>
 
 										<button
 											type="button"
-											onClick={() => setShowPassword(!showPassword)}
-											className="absolute right-3 top-1/2 -translate-y-1/2"
+											onClick={() => setShowPassword((current) => !current)}
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-sm leading-none"
+											aria-label={
+												showPassword ? "Hide password" : "Show password"
+											}
 										>
 											{showPassword ? "🙈" : "👁"}
 										</button>
@@ -159,7 +171,7 @@ export function SignupForm({
 								<Field>
 									<FieldLabel
 										htmlFor="confirm-password"
-										className="text-[#334155]"
+										className="text-[#334155] dark:text-zinc-200"
 									>
 										Confirm Password
 									</FieldLabel>
@@ -168,15 +180,20 @@ export function SignupForm({
 										<Input
 											id="confirm-password"
 											type={showConfirmPassword ? "text" : "password"}
-											className="h-10 border-[#CBD5E1] bg-white px-3"
+											className="h-10 border-[#CBD5E1] bg-white px-3 pr-10 text-[#111827] dark:border-white/15 dark:bg-white/10 dark:text-white"
 											{...register("confirmPassword")}
 										/>
 										<button
 											type="button"
 											onClick={() =>
-												setShowConfirmPassword(!showConfirmPassword)
+												setShowConfirmPassword((current) => !current)
 											}
-											className="absolute right-3 top-1/2 -translate-y-1/2"
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-sm leading-none"
+											aria-label={
+												showConfirmPassword
+													? "Hide confirm password"
+													: "Show confirm password"
+											}
 										>
 											{showConfirmPassword ? "🙈" : "👁"}
 										</button>
@@ -190,7 +207,7 @@ export function SignupForm({
 								</Field>
 							</div>
 
-							<FieldDescription className="text-[#64748B]">
+							<FieldDescription className="text-[#64748B] dark:text-zinc-400">
 								Password must be at least 8 characters long.
 							</FieldDescription>
 
@@ -202,11 +219,11 @@ export function SignupForm({
 								{isSubmitting ? "Creating Account..." : "Create Account"}
 							</Button>
 
-							<FieldDescription className="text-center text-[#64748B]">
+							<FieldDescription className="text-center text-[#64748B] dark:text-zinc-400">
 								Already have an account?{" "}
 								<Link
 									href="/login"
-									className="font-medium text-[#2563EB] hover:underline"
+									className="font-medium text-[#2563EB] hover:underline dark:text-sky-300"
 								>
 									Sign in
 								</Link>

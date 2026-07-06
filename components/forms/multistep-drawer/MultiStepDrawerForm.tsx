@@ -119,6 +119,16 @@ export function MultiStepDrawerForm() {
 		setStepIndex((current) => Math.max(current - 1, 0));
 	};
 
+	const handleNextClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		void goNext();
+	};
+
+	const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		goBack();
+	};
+
 	const submitForm = (values: LeadFormValues) => {
 		const trimmedValues = leadFormSchema.parse(values);
 
@@ -127,6 +137,16 @@ export function MultiStepDrawerForm() {
 		form.reset(emptyLeadFormValues);
 		setStepIndex(0);
 		setOpen(false);
+	};
+
+	const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		if (!isLastStep) {
+			event.preventDefault();
+			void goNext();
+			return;
+		}
+
+		void form.handleSubmit(submitForm)(event);
 	};
 
 	return (
@@ -200,7 +220,7 @@ export function MultiStepDrawerForm() {
 					</div>
 
 					<form
-						onSubmit={form.handleSubmit(submitForm)}
+						onSubmit={handleFormSubmit}
 						className="flex min-h-0 flex-1 flex-col"
 					>
 						<div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
@@ -213,7 +233,7 @@ export function MultiStepDrawerForm() {
 							<Button
 								type="button"
 								variant="outline"
-								onClick={goBack}
+								onClick={handleBackClick}
 								disabled={stepIndex === 0}
 								className="gap-2 sm:flex-1"
 							>
@@ -228,7 +248,7 @@ export function MultiStepDrawerForm() {
 							) : (
 								<Button
 									type="button"
-									onClick={goNext}
+									onClick={handleNextClick}
 									className="gap-2 sm:flex-1"
 								>
 									Next
