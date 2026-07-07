@@ -19,13 +19,13 @@ export default function SuccessModal({ open, setOpen }: Props) {
 	return (
 		<>
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="sm:max-w-md">
+				<DialogContent className="sm:max-w-md dark:border-white/10 dark:bg-[#101214]">
 					<DialogHeader className="items-center text-center">
-						<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+						<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-emerald-400/15">
 							<span className="text-3xl">✅</span>
 						</div>
 
-						<DialogTitle className="text-2xl font-semibold">
+						<DialogTitle className="text-2xl font-semibold dark:text-white">
 							Account Created Successfully!
 						</DialogTitle>
 

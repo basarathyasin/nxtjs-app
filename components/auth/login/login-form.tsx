@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
 	const router = useRouter();
 	const { login } = useAuth();
+	const [showPassword, setShowPassword] = React.useState(false);
 
 	const {
 		register,
@@ -94,12 +96,12 @@ export function LoginForm({
 	};
 	return (
 		<div className={cn("flex flex-col", className)} {...props}>
-			<Card className="rounded-xl border-[#E2E8F0] bg-white shadow-sm">
+			<Card className="rounded-xl border-[#E2E8F0] bg-white shadow-sm dark:border-white/10 dark:bg-[#101214]">
 				<CardHeader className="gap-1.5 px-5 pt-5 text-center">
-					<CardTitle className="text-xl font-semibold text-[#111827]">
+					<CardTitle className="text-xl font-semibold text-[#111827] dark:text-white">
 						Login to your account
 					</CardTitle>
-					<CardDescription className="text-sm text-[#64748B]">
+					<CardDescription className="text-sm text-[#64748B] dark:text-zinc-400">
 						Enter your email and password to continue.
 					</CardDescription>
 				</CardHeader>
@@ -108,12 +110,14 @@ export function LoginForm({
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<FieldGroup className="gap-4">
 							<Field>
-								<FieldLabel className="text-[#334155]">Email</FieldLabel>
+								<FieldLabel className="text-[#334155] dark:text-zinc-200">
+									Email
+								</FieldLabel>
 
 								<Input
 									type="email"
 									placeholder="m@example.com"
-									className="h-10 border-[#CBD5E1] bg-white px-3"
+									className="h-10 border-[#CBD5E1] bg-white px-3 text-[#111827] placeholder:text-[#94A3B8] dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder:text-zinc-500"
 									{...register("email")}
 								/>
 								{errors.email && (
@@ -123,21 +127,35 @@ export function LoginForm({
 
 							<Field>
 								<div className="flex items-center">
-									<FieldLabel className="text-[#334155]">Password</FieldLabel>
+									<FieldLabel className="text-[#334155] dark:text-zinc-200">
+										Password
+									</FieldLabel>
 
 									<Link
 										href="#"
-										className="ml-auto text-sm text-[#2563EB] hover:underline"
+										className="ml-auto text-sm text-[#2563EB] hover:underline dark:text-sky-300"
 									>
 										Forgot password?
 									</Link>
 								</div>
 
-								<Input
-									type="password"
-									className="h-10 border-[#CBD5E1] bg-white px-3"
-									{...register("password")}
-								/>
+								<div className="relative">
+									<Input
+										type={showPassword ? "text" : "password"}
+										className="h-10 border-[#CBD5E1] bg-white px-3 pr-10 text-[#111827] placeholder:text-[#94A3B8] dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder:text-zinc-500"
+										{...register("password")}
+									/>
+									<button
+										type="button"
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-sm leading-none"
+										onClick={() => setShowPassword((current) => !current)}
+										aria-label={
+											showPassword ? "Hide password" : "Show password"
+										}
+									>
+										{showPassword ? "🙈" : "👁"}
+									</button>
+								</div>
 								{errors.password && (
 									<p className="text-sm text-red-600">
 										{errors.password.message}
@@ -154,11 +172,11 @@ export function LoginForm({
 								{isSubmitting ? "Logging in..." : "Login"}
 							</Button>
 
-							<FieldDescription className="text-center text-[#64748B]">
+							<FieldDescription className="text-center text-[#64748B] dark:text-zinc-400">
 								Don&apos;t have an account?{" "}
 								<Link
 									href="/signup"
-									className="font-medium text-[#2563EB] hover:underline"
+									className="font-medium text-[#2563EB] hover:underline dark:text-sky-300"
 								>
 									Sign up
 								</Link>
