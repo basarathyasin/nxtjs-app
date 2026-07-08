@@ -1,69 +1,80 @@
 "use client";
 
 import * as React from "react";
+import axios from "axios";
 
 import { TodoTable } from "@/components/platform/TodoTable";
 import type { TodoItem } from "@/components/platform/TodoTable";
 import ErrorState from "@/components/ui/ui-states/Error";
 import LoadingState from "@/components/ui/ui-states/Loading";
-import { transformTodo } from "@/src/libs/transformTodo";
 
-export interface TodoApiResponse {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
-}
+import { api } from "@/src/libs/axios";
+import { TodoApiResponse, transformTodo } from "@/src/libs/transformTodo";
 
 export default function Dashboard() {
-  const [todos, setTodos] = React.useState<TodoItem[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState("");
+	const [todos, setTodos] = React.useState<TodoItem[]>([]);
+	const [loading, setLoading] = React.useState(true);
+	const [error, setError] = React.useState("");
 
-  const fetchTodos = React.useCallback(async () => {
-    setError("");
+	const fetchTodos = React.useCallback(async () => {
+		setError("");
+		
 
-    try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/todos"
-      );
+		try {
+			const response = await api.get<TodoApiResponse[]>("/todos");
 
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
+			const data = response.data;
 
-      const result: TodoApiResponse[] = await response.json();
+			setTodos(data.slice(0, 10).map(transformTodo));
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				if (err.response) {
+					console.error("Response:", err.response.data);
+					console.error("Status:", err.response.status);
+					console.error("Headers:", err.response.headers);
 
-      setTodos(result.slice(0, 10).map(transformTodo));
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+					setError(
+						err.response.data?.message ??
+							`Request failed with status ${err.response.status}`,
+					);
+				} else if (err.request) {
+					console.error("Request:", err.request);
+					setError("No response received from the server.");
+				} else {
+					console.error("Error:", err.message);
+					setError(err.message);
+				}
+			} else if (err instanceof Error) {
+				console.error(err.message);
+				setError(err.message);
+			} else {
+				setError("An unknown error occurred.");
+			}
+		} finally {
+			setLoading(false);
+		}
+	}, []);
 
-  React.useEffect(() => {
-    const id = setTimeout(() => {
-      void fetchTodos();
-    }, 0);
+	React.useEffect(() => {
+		const timer = setTimeout(() => {
+			void fetchTodos();
+		}, 0);
 
-    return () => clearTimeout(id);
-  }, [fetchTodos]);
+		return () => clearTimeout(timer);
+	}, [fetchTodos]);
 
-  const handleRetry = React.useCallback(() => {
-    setLoading(true);
-    void fetchTodos();
-  }, [fetchTodos]);
+	const handleRetry = React.useCallback(() => {
+		setLoading(true);
+		void fetchTodos();
+	}, [fetchTodos]);
 
-  if (loading) {
-    return <LoadingState />;
-  }
+	if (loading) {
+		return <LoadingState />;
+	}
 
-  if (error) {
-    return <ErrorState message={error} retry={handleRetry} />;
-  }
+	if (error) {
+		return <ErrorState message={error} retry={handleRetry} />;
+	}
 
-  return <TodoTable todos={todos} setTodos={setTodos} />;
+	return <TodoTable todos={todos} setTodos={setTodos} />;
 }
