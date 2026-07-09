@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-export type TodoStatus = "todo" | "in-progress" | "done";
+
+export type TodoStatus = "todo" | "done";
 export type TodoPriority = "low" | "medium" | "high";
 
 export type TodoItem = {
@@ -77,7 +78,9 @@ export type TodoTableClassNames = {
 };
 
 export type TodoTableProps = {
-	initialTodos?: TodoItem[];
+	todos: TodoItem[];
+	setTodos: React.Dispatch<React.SetStateAction<TodoItem[]>>;
+
 	copy?: Partial<TodoTableCopy>;
 	priorityOptions?: Array<{ label: string; value: TodoPriority }>;
 	visibleColumns?: Array<
@@ -125,30 +128,6 @@ const defaultPriorityOptions: NonNullable<TodoTableProps["priorityOptions"]> = [
 	{ label: "High", value: "high" },
 ];
 
-const defaultTodos: TodoItem[] = [
-	{
-		id: "todo-1",
-		title: "Plan dashboard states",
-		status: "todo",
-		priority: "high",
-		dueDate: "2026-06-25",
-	},
-	{
-		id: "todo-2",
-		title: "Review task table interactions",
-		status: "in-progress",
-		priority: "medium",
-		dueDate: "2026-06-26",
-	},
-	{
-		id: "todo-3",
-		title: "Ship first usable to-do flow",
-		status: "done",
-		priority: "low",
-		dueDate: "2026-06-27",
-	},
-];
-
 const defaultVisibleColumns: NonNullable<TodoTableProps["visibleColumns"]> = [
 	"completed",
 	"task",
@@ -168,7 +147,8 @@ function createTodo(values: TodoTaskFormValues): TodoItem {
 }
 
 export function TodoTable({
-	initialTodos = defaultTodos,
+	todos,
+	setTodos,
 	copy,
 	priorityOptions = defaultPriorityOptions,
 	visibleColumns = defaultVisibleColumns,
@@ -183,7 +163,7 @@ export function TodoTable({
 			...copy?.toast,
 		},
 	};
-	const [todos, setTodos] = React.useState<TodoItem[]>(initialTodos);
+
 	const [query, setQuery] = React.useState("");
 	const [drawerMode, setDrawerMode] = React.useState<"create" | "edit" | null>(
 		null,
@@ -211,29 +191,32 @@ export function TodoTable({
 	);
 
 	const updateTodos = React.useCallback(
-		(nextTodos: TodoItem[]) => {
-			setTodos(nextTodos);
-			onTodosChange?.(nextTodos);
+		(updater: (prev: TodoItem[]) => TodoItem[]) => {
+			setTodos((prev) => {
+				const next = updater(prev);
+				onTodosChange?.(next);
+				return next;
+			});
 		},
-		[onTodosChange],
+		[setTodos, onTodosChange],
 	);
 
-	const filteredTodos = todos.filter((todo) =>
-		todo.title.toLowerCase().includes(query.trim().toLowerCase()),
-	);
+	const filteredTodos = React.useMemo(() => {
+		const q = query.trim().toLowerCase();
+
+		return todos.filter((todo) => todo.title.toLowerCase().includes(q));
+	}, [todos, query]);
 
 	const editingTodo = todos.find((todo) => todo.id === editingId);
 	const deleteTarget = todos.find((todo) => todo.id === deleteTargetId);
 
 	const editDrawerValues = React.useMemo(
 		() =>
-			editingTodo
-				? {
-						title: editingTodo.title,
-						priority: editingTodo.priority,
-						dueDate: editingTodo.dueDate,
-					}
-				: undefined,
+			editingTodo && {
+				title: editingTodo.title,
+				priority: editingTodo.priority,
+				dueDate: editingTodo.dueDate,
+			},
 		[editingTodo],
 	);
 
@@ -253,7 +236,7 @@ export function TodoTable({
 	};
 
 	const addTodo = (values: TodoTaskFormValues) => {
-		updateTodos([createTodo(values), ...todos]);
+		updateTodos((prev) => [createTodo(values), ...prev]);
 		closeTaskDrawer();
 	};
 
@@ -269,21 +252,24 @@ export function TodoTable({
 		]);
 
 		const timeout = setTimeout(() => {
-			setToasts((currentToasts) =>
-				currentToasts.filter((toast) => toast.id !== id),
+			setToasts((current) => current.filter((toast) => toast.id !== id));
+
+			toastTimeoutsRef.current = toastTimeoutsRef.current.filter(
+				(t) => t !== timeout,
 			);
 		}, 3000);
+
 		toastTimeoutsRef.current.push(timeout);
 	};
 
 	const updateTodo = (id: string, patch: Partial<TodoItem>) => {
-		updateTodos(
-			todos.map((todo) => (todo.id === id ? { ...todo, ...patch } : todo)),
+		updateTodos((prev) =>
+			prev.map((todo) => (todo.id === id ? { ...todo, ...patch } : todo)),
 		);
 	};
 
 	const deleteTodo = (id: string) => {
-		updateTodos(todos.filter((todo) => todo.id !== id));
+		updateTodos((prev) => prev.filter((todo) => todo.id !== id));
 	};
 
 	const editTodo = (values: TodoTaskFormValues) => {
@@ -310,9 +296,15 @@ export function TodoTable({
 		}
 	};
 
+	const priorityLabels = React.useMemo(
+		() =>
+			Object.fromEntries(
+				priorityOptions.map((p) => [p.value, p.label]),
+			) as Record<TodoPriority, string>,
+		[priorityOptions],
+	);
 	const getPriorityLabel = (priority: TodoPriority) =>
-		priorityOptions.find((option) => option.value === priority)?.label ??
-		priority;
+		priorityLabels[priority] ?? priority;
 
 	return (
 		<section className={cn("space-y-5", classNames?.root)}>
@@ -320,9 +312,7 @@ export function TodoTable({
 			<TodoTaskDrawer
 				open={drawerMode !== null}
 				onOpenChange={handleEditDrawerOpenChange}
-				title={
-					drawerMode === "edit" ? text.editDrawerTitle : text.drawerTitle
-				}
+				title={drawerMode === "edit" ? text.editDrawerTitle : text.drawerTitle}
 			>
 				<TodoTaskForm
 					key={drawerMode === "edit" ? editingTodo?.id : "create-task-form"}

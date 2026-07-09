@@ -1,4 +1,5 @@
 import AuthProvider from "@/app/providers/AuthProvider";
+import ComponentInspector from "@/components/debug/ComponentInspector";
 import ThemeProvider from "@/app/providers/ThemeProvider";
 import { Geist, Inter } from "next/font/google";
 
@@ -26,6 +27,7 @@ export default function RootLayout({
 				<AuthProvider>
 					<ThemeProvider>
 						{children}
+						<ComponentInspector />
 					</ThemeProvider>
 				</AuthProvider>
 			</body>
