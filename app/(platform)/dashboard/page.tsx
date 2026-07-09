@@ -1,80 +1,71 @@
 "use client";
 
-import * as React from "react";
-import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { TodoTable } from "@/components/platform/TodoTable";
-import type { TodoItem } from "@/components/platform/TodoTable";
+import type { TodoTaskFormValues } from "@/components/platform/TodoTaskForm";
 import ErrorState from "@/components/ui/ui-states/Error";
 import LoadingState from "@/components/ui/ui-states/Loading";
+import { createTodo } from "@/src/services/createTodo";
+import { deleteTodo } from "@/src/services/deleteTodos";
+import { fetchTodos } from "@/src/services/fetchTodo";
 
-import { api } from "@/src/libs/axios";
-import { TodoApiResponse, transformTodo } from "@/src/libs/transformTodo";
+const todosQueryKey = ["todos"] as const;
 
 export default function Dashboard() {
-	const [todos, setTodos] = React.useState<TodoItem[]>([]);
-	const [loading, setLoading] = React.useState(true);
-	const [error, setError] = React.useState("");
+	const queryClient = useQueryClient();
 
-	const fetchTodos = React.useCallback(async () => {
-		setError("");
-		
+	const todosQuery = useQuery({
+		queryKey: todosQueryKey,
+		queryFn: fetchTodos,
+	});
 
-		try {
-			const response = await api.get<TodoApiResponse[]>("/todos");
+	const createMutation = useMutation({
+		mutationFn: createTodo,
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: todosQueryKey });
+		},
+	});
 
-			const data = response.data;
+	const deleteMutation = useMutation({
+		mutationFn: deleteTodo,
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: todosQueryKey });
+		},
+	});
 
-			setTodos(data.slice(0, 10).map(transformTodo));
-		} catch (err) {
-			if (axios.isAxiosError(err)) {
-				if (err.response) {
-					console.error("Response:", err.response.data);
-					console.error("Status:", err.response.status);
-					console.error("Headers:", err.response.headers);
+	function handleCreate(values: TodoTaskFormValues) {
+		createMutation.mutate(values);
+	}
 
-					setError(
-						err.response.data?.message ??
-							`Request failed with status ${err.response.status}`,
-					);
-				} else if (err.request) {
-					console.error("Request:", err.request);
-					setError("No response received from the server.");
-				} else {
-					console.error("Error:", err.message);
-					setError(err.message);
-				}
-			} else if (err instanceof Error) {
-				console.error(err.message);
-				setError(err.message);
-			} else {
-				setError("An unknown error occurred.");
-			}
-		} finally {
-			setLoading(false);
-		}
-	}, []);
+	function handleDelete(id: string) {
+		deleteMutation.mutate(id);
+	}
 
-	React.useEffect(() => {
-		const timer = setTimeout(() => {
-			void fetchTodos();
-		}, 0);
-
-		return () => clearTimeout(timer);
-	}, [fetchTodos]);
-
-	const handleRetry = React.useCallback(() => {
-		setLoading(true);
-		void fetchTodos();
-	}, [fetchTodos]);
-
-	if (loading) {
+	if (todosQuery.isPending) {
 		return <LoadingState />;
 	}
 
-	if (error) {
-		return <ErrorState message={error} retry={handleRetry} />;
+	if (todosQuery.error) {
+		return (
+			<ErrorState
+				message={todosQuery.error.message}
+				retry={() => void todosQuery.refetch()}
+			/>
+		);
 	}
 
-	return <TodoTable todos={todos} setTodos={setTodos} />;
+	return (
+		<TodoTable
+			todos={todosQuery.data}
+			isCreating={createMutation.isPending}
+			deletingIds={
+  deleteMutation.isPending && deleteMutation.variables
+    ? [String(deleteMutation.variables)]
+    : []
+}
+			onCreate={handleCreate}
+			onDelete={handleDelete}
+		/>
+	);
 }
