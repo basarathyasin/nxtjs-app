@@ -1,71 +1,43 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { TodoTable } from "@/components/platform/TodoTable";
-import type { TodoTaskFormValues } from "@/components/platform/TodoTaskForm";
 import ErrorState from "@/components/ui/ui-states/Error";
 import LoadingState from "@/components/ui/ui-states/Loading";
-import { createTodo } from "@/src/services/createTodo";
-import { deleteTodo } from "@/src/services/deleteTodos";
-import { fetchTodos } from "@/src/services/fetchTodo";
 
-const todosQueryKey = ["todos"] as const;
+import { useTodos } from "@/hooks/queries/useTodos";
+import { useCreateTodo } from "@/hooks/mutations/useCreateTodo";
+import { useDeleteTodo } from "@/hooks/mutations/useDeleteTodo";
 
 export default function Dashboard() {
-	const queryClient = useQueryClient();
+	const {data: todos,isPending,error,refetch} = useTodos();
+	const createMutation = useCreateTodo();
+	const deleteMutation = useDeleteTodo();
 
-	const todosQuery = useQuery({
-		queryKey: todosQueryKey,
-		queryFn: fetchTodos,
-	});
+	const deletingIds =
+		deleteMutation.isPending && deleteMutation.variables
+			? [String(deleteMutation.variables)]
+			: [];
 
-	const createMutation = useMutation({
-		mutationFn: createTodo,
-		onSuccess: () => {
-			void queryClient.invalidateQueries({ queryKey: todosQueryKey });
-		},
-	});
-
-	const deleteMutation = useMutation({
-		mutationFn: deleteTodo,
-		onSuccess: () => {
-			void queryClient.invalidateQueries({ queryKey: todosQueryKey });
-		},
-	});
-
-	function handleCreate(values: TodoTaskFormValues) {
-		createMutation.mutate(values);
-	}
-
-	function handleDelete(id: string) {
-		deleteMutation.mutate(id);
-	}
-
-	if (todosQuery.isPending) {
+	if (isPending) {
 		return <LoadingState />;
 	}
 
-	if (todosQuery.error) {
+	if (error) {
 		return (
 			<ErrorState
-				message={todosQuery.error.message}
-				retry={() => void todosQuery.refetch()}
+				message={error.message}
+				retry={() => void refetch()}
 			/>
 		);
 	}
 
 	return (
 		<TodoTable
-			todos={todosQuery.data}
+			todos={todos}
 			isCreating={createMutation.isPending}
-			deletingIds={
-  deleteMutation.isPending && deleteMutation.variables
-    ? [String(deleteMutation.variables)]
-    : []
-}
-			onCreate={handleCreate}
-			onDelete={handleDelete}
+			deletingIds={deletingIds}
+			onCreate={createMutation.mutate}
+			onDelete={deleteMutation.mutate}
 		/>
 	);
 }
