@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-
 export type TodoStatus = "todo" | "done";
 export type TodoPriority = "low" | "medium" | "high";
 
@@ -79,7 +78,12 @@ export type TodoTableClassNames = {
 
 export type TodoTableProps = {
 	todos: TodoItem[];
-	setTodos: React.Dispatch<React.SetStateAction<TodoItem[]>>;
+	onCreate?: (values: TodoTaskFormValues) => void;
+	onUpdate?: (id: string, patch: Partial<TodoItem>) => void;
+	onDelete?: (id: string) => void;
+	onToggleStatus?: (id: string, status: TodoStatus) => void;
+	isCreating?: boolean;
+	deletingIds?: string[];
 
 	copy?: Partial<TodoTableCopy>;
 	priorityOptions?: Array<{ label: string; value: TodoPriority }>;
@@ -87,7 +91,6 @@ export type TodoTableProps = {
 		"completed" | "task" | "priority" | "dueDate" | "actions"
 	>;
 	classNames?: TodoTableClassNames;
-	onTodosChange?: (todos: TodoItem[]) => void;
 };
 
 const defaultCopy: TodoTableCopy = {
@@ -136,24 +139,18 @@ const defaultVisibleColumns: NonNullable<TodoTableProps["visibleColumns"]> = [
 	"actions",
 ];
 
-function createTodo(values: TodoTaskFormValues): TodoItem {
-	return {
-		id: `todo-${Date.now()}`,
-		title: values.title,
-		status: "todo",
-		priority: values.priority,
-		dueDate: values.dueDate,
-	};
-}
-
 export function TodoTable({
 	todos,
-	setTodos,
 	copy,
 	priorityOptions = defaultPriorityOptions,
 	visibleColumns = defaultVisibleColumns,
 	classNames,
-	onTodosChange,
+	onCreate,
+	onDelete,
+	onUpdate,
+	onToggleStatus,
+	isCreating = false,
+	deletingIds = [],
 }: TodoTableProps) {
 	const text = {
 		...defaultCopy,
@@ -188,17 +185,6 @@ export function TodoTable({
 	const columns = React.useMemo(
 		() => new Set(visibleColumns),
 		[visibleColumns],
-	);
-
-	const updateTodos = React.useCallback(
-		(updater: (prev: TodoItem[]) => TodoItem[]) => {
-			setTodos((prev) => {
-				const next = updater(prev);
-				onTodosChange?.(next);
-				return next;
-			});
-		},
-		[setTodos, onTodosChange],
 	);
 
 	const filteredTodos = React.useMemo(() => {
@@ -236,7 +222,7 @@ export function TodoTable({
 	};
 
 	const addTodo = (values: TodoTaskFormValues) => {
-		updateTodos((prev) => [createTodo(values), ...prev]);
+		onCreate?.(values);
 		closeTaskDrawer();
 	};
 
@@ -262,19 +248,13 @@ export function TodoTable({
 		toastTimeoutsRef.current.push(timeout);
 	};
 
-	const updateTodo = (id: string, patch: Partial<TodoItem>) => {
-		updateTodos((prev) =>
-			prev.map((todo) => (todo.id === id ? { ...todo, ...patch } : todo)),
-		);
-	};
-
 	const deleteTodo = (id: string) => {
-		updateTodos((prev) => prev.filter((todo) => todo.id !== id));
+		onDelete?.(id);
 	};
 
 	const editTodo = (values: TodoTaskFormValues) => {
 		if (!editingTodo) return;
-		updateTodo(editingTodo.id, {
+		onUpdate?.(editingTodo.id, {
 			title: values.title,
 			priority: values.priority,
 			dueDate: values.dueDate,
@@ -368,6 +348,7 @@ export function TodoTable({
 						size="sm"
 						onClick={openCreateDrawer}
 						className="gap-2"
+						disabled={isCreating}
 					>
 						<Plus className="size-4" />
 						{text.addButton}
@@ -426,9 +407,7 @@ export function TodoTable({
 													checked={todo.status === "done"}
 													onChange={(event) => {
 														const isDone = event.target.checked;
-														updateTodo(todo.id, {
-															status: isDone ? "done" : "todo",
-														});
+														onToggleStatus?.(todo.id, isDone ? "done" : "todo");
 														addToast(
 															isDone
 																? text.toast.completedTitle
@@ -499,6 +478,7 @@ export function TodoTable({
 														className="size-9 rounded-lg border border-[#FCA5A5] bg-[#FEE2E2] p-2 text-[#B91C1C] shadow-none hover:bg-[#FECACA] dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200 dark:hover:bg-red-400/20"
 														onClick={() => setDeleteTargetId(todo.id)}
 														aria-label="Delete task"
+														disabled={deletingIds.includes(todo.id)}
 													>
 														<Trash2 className="size-4" />
 													</Button>

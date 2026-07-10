@@ -1,4 +1,4 @@
-import { TodoItem } from "@/components/platform/TodoTable";
+import type { TodoItem } from "@/components/platform/TodoTable";
 export interface TodoApiResponse {
 	userId: number;
 	id: number;
