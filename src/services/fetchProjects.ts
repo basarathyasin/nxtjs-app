@@ -1,41 +1,43 @@
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
 
 import type { Project } from "@/components/platform/ProjectsTable";
+import { apolloClient } from "@/src/libs/apolloClient";
 
 const GET_PROJECTS = gql`
-  query GetProjects {
-    projects {
-      id
-      firstName
-      lastName
-      email
-      company
-      teamSize
-      goal
-      budget
-      timeline
-      createdAt
-    }
-  }
+	query GetProjects {
+		projects {
+			documentId
+			firstName
+			lastName
+			email
+			company
+			teamSize
+			goal
+			budget
+			timeline
+			createdAt
+		}
+	}
 `;
 
-type ProjectsResponse = {
-  projects: Project[];
+type StrapiProject = Omit<Project, "id"> & {
+	documentId: string;
 };
 
-export function useProjects() {
-  const { data, loading, error, refetch } = useQuery<ProjectsResponse>(
-    GET_PROJECTS,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
+type ProjectsResponse = {
+	projects: StrapiProject[];
+};
 
-  return {
-    projects: data?.projects ?? [],
-    loading,
-    error,
-    refetch,
-  };
+export async function fetchProjects(): Promise<Project[]> {
+	const { data } = await apolloClient.query<ProjectsResponse>({
+		query: GET_PROJECTS,
+		fetchPolicy: "network-only",
+	});
+
+	return (
+		data?.projects.map((project) => ({
+			id: project.documentId,
+			...project,
+		})) ?? []
+	);
 }

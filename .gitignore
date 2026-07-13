@@ -1,8 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# ==========================
+# Dependencies
+# ==========================
 /node_modules
 /graphql-server/node_modules
+/strapi/node_modules
+
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,33 +15,67 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# ==========================
+# Testing
+# ==========================
 /coverage
 
-# next.js
+# ==========================
+# Next.js
+# ==========================
 /.next/
 /out/
 
-# production
+# ==========================
+# Strapi
+# ==========================
+/strapi/.cache
+/strapi/dist
+/strapi/build
+/strapi/.tmp
+
+# SQLite database (ignore if using SQLite locally)
+/strapi/.tmp/
+/strapi/.strapi-updater.json
+/strapi/.env
+/strapi/.env.*
+
+# Uploads (optional)
+# Uncomment if you DON'T want uploaded media in Git
+# /strapi/public/uploads
+
+# ==========================
+# Production
+# ==========================
 /build
 
-# misc
+# ==========================
+# Misc
+# ==========================
 .DS_Store
 *.pem
 
-# debug
+# ==========================
+# Debug
+# ==========================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# ==========================
+# Environment
+# ==========================
 .env*
 .env.local
 
-# vercel
+# ==========================
+# Vercel
+# ==========================
 .vercel
 
-# typescript
+# ==========================
+# TypeScript
+# ==========================
 *.tsbuildinfo
 next-env.d.ts
