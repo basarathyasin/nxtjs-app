@@ -45,7 +45,7 @@ import {
 } from "@/components/forms/multistep-drawer/schema";
 import { useLeadFormStore } from "@/components/forms/multistep-drawer/store";
 
-type Project = LeadFormValues & {
+export type Project = LeadFormValues & {
 	id: string;
 	createdAt: string;
 };
@@ -74,8 +74,12 @@ const steps: Step[] = [
 	},
 ];
 
-export function ProjectsTable() {
-	const [projects, setProjects] = React.useState<Project[]>([]);
+type ProjectsTableProps = {
+	projects: Project[];
+	onCreate: (values: LeadFormValues) => void;
+};
+
+export function ProjectsTable({ projects, onCreate }: ProjectsTableProps) {
 	const [query, setQuery] = React.useState("");
 	const [drawerOpen, setDrawerOpen] = React.useState(false);
 
@@ -94,18 +98,7 @@ export function ProjectsTable() {
 	});
 
 	const addProject = (values: LeadFormValues) => {
-		setProjects((currentProjects) => [
-			{
-				...values,
-				id: `project-${Date.now()}`,
-				createdAt: new Date().toLocaleDateString("en", {
-					month: "short",
-					day: "numeric",
-					year: "numeric",
-				}),
-			},
-			...currentProjects,
-		]);
+		onCreate(values);
 		setDrawerOpen(false);
 	};
 

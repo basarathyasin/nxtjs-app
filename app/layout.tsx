@@ -1,3 +1,4 @@
+import ApolloProvider from "@/app/providers/ApolloProvider";
 import AuthProvider from "@/app/providers/AuthProvider";
 import QueryProvider from "@/app/providers/QueryProvider";
 import ComponentInspector from "@/components/debug/ComponentInspector";
@@ -25,14 +26,16 @@ export default function RootLayout({
 	return (
 		<html lang="en" className={cn(geist.variable, inter.variable)}>
 			<body className="min-h-screen">
-				<QueryProvider>
-					<AuthProvider>
-						<ThemeProvider>
-							{children}
-							<ComponentInspector />
-						</ThemeProvider>
-					</AuthProvider>
-				</QueryProvider>
+				<ApolloProvider>
+					<QueryProvider>
+						<AuthProvider>
+							<ThemeProvider>
+								{children}
+								<ComponentInspector />
+							</ThemeProvider>
+						</AuthProvider>
+					</QueryProvider>
+				</ApolloProvider>
 			</body>
 		</html>
 	);
