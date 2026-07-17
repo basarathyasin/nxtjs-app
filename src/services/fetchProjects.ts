@@ -12,7 +12,7 @@ const GET_PROJECTS = gql`
 			email
 			company
 			teamSize
-			goal
+			projectGoal
 			budget
 			timeline
 			createdAt
