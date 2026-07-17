@@ -5,7 +5,6 @@
 # ==========================
 /node_modules
 /graphql-server/node_modules
-/strapi/node_modules
 
 /.pnp
 .pnp.*
@@ -25,24 +24,6 @@
 # ==========================
 /.next/
 /out/
-
-# ==========================
-# Strapi
-# ==========================
-/strapi/.cache
-/strapi/dist
-/strapi/build
-/strapi/.tmp
-
-# SQLite database (ignore if using SQLite locally)
-/strapi/.tmp/
-/strapi/.strapi-updater.json
-/strapi/.env
-/strapi/.env.*
-
-# Uploads (optional)
-# Uncomment if you DON'T want uploaded media in Git
-# /strapi/public/uploads
 
 # ==========================
 # Production
