@@ -5,10 +5,16 @@ export type AuthUser = {
 	email: string;
 };
 
+export type AuthCredentials = {
+	email: string;
+	password: string;
+};
+
 export type AuthContextType = {
 	currentUser: AuthUser | null;
 	isAuthenticated: boolean;
-	login: (user: AuthUser) => void;
+	login: (credentials: AuthCredentials) => Promise<AuthUser>;
+	startSession: (jwt: string, user: AuthUser) => void;
 	logout: () => void;
 };
 

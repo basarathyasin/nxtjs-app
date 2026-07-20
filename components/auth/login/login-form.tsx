@@ -28,16 +28,13 @@ type LoginFormData = {
 	password: string;
 };
 
-type User = {
-	name: string;
-	email: string;
-	password: string;
-};
-
 export function LoginForm({
 	className,
+	redirectTo,
 	...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & {
+	redirectTo?: string;
+}) {
 	const router = useRouter();
 	const { login } = useAuth();
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -51,46 +48,17 @@ export function LoginForm({
 
 	const onSubmit = async (data: LoginFormData) => {
 		try {
-			const storedUsers = localStorage.getItem("users");
-
-			if (!storedUsers) {
-				setError("email", {
-					type: "manual",
-					message: "No users found. Please sign up first.",
-				});
-				return;
-			}
-
-			const parsed = JSON.parse(storedUsers);
-			const users: User[] = Array.isArray(parsed) ? parsed : [parsed];
-
-			const user = users.find(
-				(user) => user.email === data.email && user.password === data.password,
-			);
-
-			if (!user) {
-				setError("password", {
-					type: "manual",
-					message: "Invalid email or password.",
-				});
-				return;
-			}
-
-			localStorage.setItem("isAuthenticated", "true");
-			login({
-				name: user.name,
-				email: user.email,
-			});
-
-			await new Promise((resolve) => setTimeout(resolve, 2000));
-
-			router.replace("/dashboard");
+			await login(data);
+			router.replace(getSafeRedirect(redirectTo));
 		} catch (error) {
 			console.error(error);
 
-			setError("email", {
+			setError("password", {
 				type: "manual",
-				message: "Something went wrong. Please try again.",
+				message:
+					error instanceof Error
+						? error.message
+						: "Invalid email or password.",
 			});
 		}
 	};
@@ -187,4 +155,12 @@ export function LoginForm({
 			</Card>
 		</div>
 	);
+}
+
+function getSafeRedirect(redirect?: string) {
+	if (!redirect?.startsWith("/") || redirect.startsWith("//")) {
+		return "/dashboard";
+	}
+
+	return redirect;
 }
