@@ -3,10 +3,15 @@
 import { useState, type ReactNode } from "react";
 
 import { AuthContext, type AuthUser } from "@/app/context/AuthContext";
-
-const CURRENT_USER_STORAGE_KEY = "currentUser";
-const IS_AUTHENTICATED_STORAGE_KEY = "isAuthenticated";
-const USERS_STORAGE_KEY = "users";
+import {
+	CURRENT_USER_STORAGE_KEY,
+	IS_AUTHENTICATED_STORAGE_KEY,
+	clearJwt,
+	getStoredJwt,
+	loginWithStrapi,
+	persistJwt,
+	type StrapiUser,
+} from "@/src/libs/strapiAuth";
 
 type AuthProviderProps = {
 	children: ReactNode;
@@ -23,14 +28,25 @@ export default function AuthProvider({
 		return getStoredUser();
 	});
 
-	function login(user: AuthUser) {
+	async function login(credentials: { email: string; password: string }) {
+		const { jwt, user } = await loginWithStrapi(credentials);
+		const authUser = mapStrapiUser(user, credentials.email);
+
+		startSession(jwt, authUser);
+
+		return authUser;
+	}
+
+	function startSession(jwt: string, user: AuthUser) {
 		setCurrentUser(user);
+		persistJwt(jwt);
 		localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(user));
 		localStorage.setItem(IS_AUTHENTICATED_STORAGE_KEY, "true");
 	}
 
 	function logout() {
 		setCurrentUser(null);
+		clearJwt();
 		localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
 		localStorage.removeItem(IS_AUTHENTICATED_STORAGE_KEY);
 	}
@@ -43,6 +59,7 @@ export default function AuthProvider({
 				currentUser,
 				isAuthenticated,
 				login,
+				startSession,
 				logout,
 			}}
 		>
@@ -51,7 +68,21 @@ export default function AuthProvider({
 	);
 }
 
+function mapStrapiUser(user: StrapiUser, fallbackEmail: string): AuthUser {
+	const email = user.email ?? fallbackEmail;
+	const name = user.name ?? user.username ?? email.split("@")[0] ?? "User";
+
+	return {
+		name,
+		email,
+	};
+}
+
 function getStoredUser(): AuthUser | null {
+	if (!getStoredJwt()) {
+		return null;
+	}
+
 	const storedUser = localStorage.getItem(CURRENT_USER_STORAGE_KEY);
 
 	if (storedUser) {
@@ -62,17 +93,7 @@ function getStoredUser(): AuthUser | null {
 		}
 	}
 
-	if (localStorage.getItem(IS_AUTHENTICATED_STORAGE_KEY) !== "true") {
-		return null;
-	}
-
-	const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
-
-	if (!storedUsers) {
-		return null;
-	}
-
-	return parseAuthUser(storedUsers);
+	return null;
 }
 
 function parseAuthUser(value: string): AuthUser | null {

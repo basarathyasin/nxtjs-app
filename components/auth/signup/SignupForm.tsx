@@ -27,6 +27,7 @@ import { useState } from "react";
 
 import SuccessModal from "./SuccessModal";
 import { useAuth } from "@/hooks/useAuth";
+import { registerWithStrapi } from "@/src/libs/strapiAuth";
 
 export function SignupForm({
 	className,
@@ -37,6 +38,7 @@ export function SignupForm({
 		handleSubmit,
 		reset,
 		formState: { errors, isSubmitting },
+		setError,
 	} = useForm<SignupFormData>({
 		resolver: zodResolver(signupSchema),
 		defaultValues: {
@@ -49,25 +51,28 @@ export function SignupForm({
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [open, setOpen] = useState(false);
-	const { login } = useAuth();
+	const { startSession } = useAuth();
 
 	const onSubmit = async (data: SignupFormData) => {
 		try {
-			console.log(data);
+			const { jwt, user } = await registerWithStrapi(data);
 
-			localStorage.setItem("users", JSON.stringify(data));
-			login({
-				name: data.name,
-				email: data.email,
+			startSession(jwt, {
+				name: user.name ?? user.username ?? data.name,
+				email: user.email ?? data.email,
 			});
-
-			await new Promise((resolve) => setTimeout(resolve, 2000));
 
 			reset();
 			setOpen(true);
-			// router.replace("/dashboard");
 		} catch (error) {
 			console.error(error);
+			setError("email", {
+				type: "manual",
+				message:
+					error instanceof Error
+						? error.message
+						: "Could not create your Strapi account.",
+			});
 		}
 	};
 
