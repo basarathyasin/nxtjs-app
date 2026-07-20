@@ -35,7 +35,9 @@ export default function ProjectsPage() {
 	return (
 		<div className="space-y-3">
 			{projectsQuery.isPending ? (
-				<p className="text-sm text-muted-foreground">Loading demo projects...</p>
+				<p className="text-sm text-muted-foreground">
+					Loading demo projects...
+				</p>
 			) : null}
 			{projectsQuery.error ? (
 				<p className="text-sm text-red-600 dark:text-red-300">
