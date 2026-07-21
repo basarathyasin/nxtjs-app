@@ -149,3 +149,38 @@
 @utility font-heading {
     font-family: var(--font-heading);
 }
+
+@font-face {
+	font-family: "Satoshi";
+	font-style: normal;
+	font-weight: 300;
+	src: url("/font/Satoshi-Light.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "Satoshi";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/font/Satoshi-Regular.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "Satoshi";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/font/Satoshi-Medium.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "Satoshi";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/font/Satoshi-Bold.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "Satoshi";
+	font-style: normal;
+	font-weight: 900;
+	src: url("/font/Satoshi-Black.otf") format("opentype");
+}

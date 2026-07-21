@@ -91,6 +91,9 @@ const iconMap: Record<MegaMenuIconName, LucideIcon> = {
 	users: Users,
 };
 
+const figmaMenuFont =
+	"[font-family:'Satoshi',var(--font-geist),Arial,sans-serif]";
+
 export function MegaMenu({
 	config = megaMenuConfig,
 	className,
@@ -99,6 +102,7 @@ export function MegaMenu({
 		<header
 			className={cn(
 				"sticky top-0 z-50 w-full border-b border-[#e4e4e7] bg-white/95 backdrop-blur-md",
+				figmaMenuFont,
 				className,
 			)}
 		>
@@ -411,7 +415,10 @@ function MobileMenu({ config }: { config: MegaMenuConfig }) {
 				</Button>
 			</SheetTrigger>
 			<SheetContent
-				className="w-[min(420px,92vw)] overflow-y-auto"
+				className={cn(
+					"w-[min(420px,92vw)] overflow-y-auto",
+					figmaMenuFont,
+				)}
 				showCloseButton={false}
 			>
 				<div className="flex items-center justify-between border-b px-5 py-4">
