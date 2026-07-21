@@ -91,7 +91,7 @@ function NavigationMenuContent({
 		<NavigationMenuPrimitive.Content
 			data-slot="navigation-menu-content"
 			className={cn(
-				"left-0 top-0 w-full data-[motion=from-end]:animate-in data-[motion=from-end]:slide-in-from-right-20 data-[motion=from-start]:animate-in data-[motion=from-start]:slide-in-from-left-20 data-[motion=to-end]:animate-out data-[motion=to-end]:slide-out-to-right-20 data-[motion=to-start]:animate-out data-[motion=to-start]:slide-out-to-left-20 md:absolute md:w-auto",
+				"left-0 top-0 w-full duration-[220ms] ease-out data-[motion=from-end]:z-20 data-[motion=from-end]:animate-in data-[motion=from-end]:fade-in-0 data-[motion=from-start]:z-20 data-[motion=from-start]:animate-in data-[motion=from-start]:fade-in-0 data-[motion=to-end]:pointer-events-none data-[motion=to-end]:z-10 data-[motion=to-end]:opacity-0 data-[motion=to-start]:pointer-events-none data-[motion=to-start]:z-10 data-[motion=to-start]:opacity-0 md:absolute md:w-auto",
 				className,
 			)}
 			{...props}
@@ -129,7 +129,7 @@ function NavigationMenuViewport({
 			<NavigationMenuPrimitive.Viewport
 				data-slot="navigation-menu-viewport"
 				className={cn(
-					"origin-top-center relative h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-b-xl bg-transparent text-zinc-950 transition-[width,height] duration-300 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)] dark:text-zinc-50",
+					"origin-top-left relative h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-b-xl bg-transparent text-zinc-950 transition-[width,height] duration-300 ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 md:w-[var(--radix-navigation-menu-viewport-width)] dark:text-zinc-50",
 				)}
 				{...props}
 			/>

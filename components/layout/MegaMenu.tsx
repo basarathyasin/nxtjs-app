@@ -154,6 +154,8 @@ function DesktopMenu({ items }: { items: MegaMenuItem[] }) {
 	return (
 		<NavigationMenu
 			className="static hidden flex-none lg:flex"
+			delayDuration={120}
+			skipDelayDuration={500}
 			viewportClassName="top-[calc(100%+2px)]"
 		>
 			<NavigationMenuList className="gap-0">
@@ -161,7 +163,7 @@ function DesktopMenu({ items }: { items: MegaMenuItem[] }) {
 					<NavigationMenuItem key={item.title}>
 						{item.panels ? (
 							<>
-								<NavigationMenuTrigger className="h-auto gap-2 rounded-none px-[19px] py-[26px] text-base font-normal leading-[1.65] text-[#09090b] hover:bg-transparent hover:text-[#09090b] focus:bg-transparent focus:text-[#09090b] data-[state=open]:bg-transparent [&_svg]:ml-0 [&_svg]:size-3.5">
+								<NavigationMenuTrigger className="h-auto cursor-pointer gap-2 rounded-none px-[19px] py-[26px] text-base font-normal leading-[1.65] text-[#09090b] hover:bg-transparent hover:text-[#09090b] focus:bg-transparent focus:text-[#09090b] data-[state=open]:bg-transparent [&_svg]:ml-0 [&_svg]:size-3.5">
 									{item.title}
 								</NavigationMenuTrigger>
 								<NavigationMenuContent>
@@ -244,9 +246,7 @@ function CompactMenuDropdown({
 	layout: MegaMenuItem["layout"];
 }) {
 	const compactFrameClass =
-		panel.id === "company"
-			? "h-[242px] w-[542px] grid-cols-[237px_52px_201px_52px]"
-			: "h-[242px] w-[566px] grid-cols-[261px_52px_201px_52px]";
+		"h-[242px] w-[566px] grid-cols-[261px_52px_201px_52px]";
 
 	return (
 		<div
@@ -300,7 +300,7 @@ function MenuRail({
 							onFocus={() => onActivePanelChange(panel.id)}
 							onMouseEnter={() => onActivePanelChange(panel.id)}
 							className={cn(
-								"flex min-h-[26px] items-center gap-3 rounded-md px-0 py-0 text-left text-base font-medium leading-[1.6] text-[#1a1f36] transition-colors hover:text-[#1fa971] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1fa971]/30",
+								"flex min-h-[26px] cursor-pointer items-center gap-3 rounded-md px-0 py-0 text-left text-base font-medium leading-[1.6] text-[#1a1f36] transition-colors hover:text-[#1fa971] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1fa971]/30",
 								isActive && "font-bold text-[#1fa971]",
 							)}
 						>
@@ -352,7 +352,7 @@ function MegaMenuListLink({ link }: { link: MegaMenuLink }) {
 		<NavigationMenuLink asChild>
 			<Link
 				href={link.href}
-				className="group flex min-h-[54px] items-center gap-4 rounded-md p-3 text-base font-medium leading-[1.6] text-[#425466] hover:bg-zinc-50 hover:text-[#1fa971] focus:bg-zinc-50 focus:text-[#1fa971]"
+				className="group flex min-h-[54px] cursor-pointer items-center gap-4 rounded-md p-3 text-base font-medium leading-[1.6] text-[#425466] hover:bg-zinc-50 hover:text-[#1fa971] focus:bg-zinc-50 focus:text-[#1fa971]"
 			>
 				<span className="flex size-[30px] shrink-0 items-center justify-center rounded-[4.286px] border border-[#e4e4e7] bg-white text-[#1a1f36] transition-colors group-hover:border-[#ccefe5] group-hover:text-[#1fa971]">
 					<Icon className="size-[18px]" aria-hidden="true" />
@@ -378,9 +378,9 @@ function PromoPanel({
 			href={promo.href}
 			aria-label={promo.title}
 			className={cn(
-				"flex h-full items-center justify-center transition-colors",
+				"flex h-full cursor-pointer items-center justify-center transition-colors",
 				isDefault && "bg-[#e6ebf1] px-[52px] py-0 hover:bg-[#dfe6ee]",
-				isMedium && "bg-[#e6ebf1] px-[26.5px] py-0 hover:bg-[#dfe6ee]",
+				isMedium && "bg-[#e6ebf1] px-[21.5px] py-0 hover:bg-[#dfe6ee]",
 				variant === "compact" && "bg-transparent p-0",
 			)}
 		>
