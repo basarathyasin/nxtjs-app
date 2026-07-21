@@ -1,4 +1,4 @@
-import Navbar from "@/components/layout/Navbar";
+import { MegaMenu } from "@/components/layout/MegaMenu";
 import Footer from "@/components/layout/Footer";
 
 export default function RootLayout({
@@ -6,13 +6,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex min-h-screen flex-col">
-        <Navbar />
+	return (
+		<div className="flex min-h-screen flex-col">
+			<MegaMenu />
 
-        <main className="w-full flex-1">{children}</main>
+			<main className="w-full flex-1">{children}</main>
 
-        <Footer />
-    </div>
-  );
+			<Footer />
+		</div>
+	);
 }
