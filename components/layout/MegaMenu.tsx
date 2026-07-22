@@ -30,6 +30,7 @@ import {
 	X,
 	type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
@@ -90,6 +91,9 @@ const iconMap: Record<MegaMenuIconName, LucideIcon> = {
 	users: Users,
 };
 
+const figmaMenuFont =
+	"[font-family:'Satoshi',var(--font-geist),Arial,sans-serif]";
+
 export function MegaMenu({
 	config = megaMenuConfig,
 	className,
@@ -97,26 +101,34 @@ export function MegaMenu({
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-50 w-full border-b border-[#d9dde3] bg-white/95 backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/95",
+				"sticky top-0 z-50 w-full border-b border-[#e4e4e7] bg-white/95 backdrop-blur-md",
+				figmaMenuFont,
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex h-[104px] w-full max-w-[1420px] items-center justify-between px-5 lg:px-0">
+			<div className="relative mx-auto flex h-[111px] w-full max-w-[1420px] items-center justify-between px-5 2xl:px-0">
 				<Link
 					href={config.brand.href}
-					className="flex items-center gap-3 text-[34px] font-black leading-none text-[#08211d] dark:text-white"
+					className="flex items-center"
+					aria-label={`${config.brand.name} home`}
 				>
-					<BrandMark />
-					<span>{config.brand.name}</span>
+					<Image
+						src="/dentiralogo.png"
+						alt={config.brand.name}
+						width={164}
+						height={29}
+						className="h-[29px] w-[164px] object-contain"
+						priority
+					/>
 				</Link>
 
 				<DesktopMenu items={config.items} />
 
-				<div className="hidden items-center gap-4 lg:flex">
+				<div className="hidden items-center gap-[18px] lg:flex">
 					<Button
 						asChild
 						variant="outline"
-						className="h-10 rounded-lg border-[#ff7a1a] px-8 text-[#ff6b00] hover:bg-orange-50 hover:text-[#ff6b00] dark:border-orange-400 dark:text-orange-300 dark:hover:bg-orange-400/10"
+						className="h-10 rounded-xl border-[#f97316] bg-white px-8 text-[15px] font-bold leading-none text-[#f97316] shadow-[0_0_4px_rgba(0,0,0,0.08)] hover:bg-orange-50 hover:text-[#f97316]"
 					>
 						<Link href={config.actions.signIn.href}>
 							{config.actions.signIn.title}
@@ -124,7 +136,7 @@ export function MegaMenu({
 					</Button>
 					<Button
 						asChild
-						className="h-10 rounded-lg bg-[#10ad7a] px-8 text-white hover:bg-[#0d966b] dark:bg-[#10ad7a] dark:text-white dark:hover:bg-[#0d966b]"
+						className="h-10 rounded-xl bg-[#0cb07a] px-8 text-[15px] font-bold leading-none text-white hover:bg-[#0a9e6e]"
 					>
 						<Link href={config.actions.getStarted.href}>
 							{config.actions.getStarted.title}
@@ -141,15 +153,17 @@ export function MegaMenu({
 function DesktopMenu({ items }: { items: MegaMenuItem[] }) {
 	return (
 		<NavigationMenu
-			className="static hidden lg:flex"
+			className="static hidden flex-none lg:flex"
+			delayDuration={120}
+			skipDelayDuration={500}
 			viewportClassName="top-[calc(100%+2px)]"
 		>
-			<NavigationMenuList className="gap-7">
+			<NavigationMenuList className="gap-0">
 				{items.map((item) => (
 					<NavigationMenuItem key={item.title}>
 						{item.panels ? (
 							<>
-								<NavigationMenuTrigger className="h-10 px-0 text-base font-normal hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:data-[state=open]:bg-transparent">
+								<NavigationMenuTrigger className="h-auto cursor-pointer gap-2 rounded-none px-[19px] py-[26px] text-base font-normal leading-[1.65] text-[#09090b] hover:bg-transparent hover:text-[#09090b] focus:bg-transparent focus:text-[#09090b] data-[state=open]:bg-transparent [&_svg]:ml-0 [&_svg]:size-3.5">
 									{item.title}
 								</NavigationMenuTrigger>
 								<NavigationMenuContent>
@@ -158,7 +172,10 @@ function DesktopMenu({ items }: { items: MegaMenuItem[] }) {
 							</>
 						) : (
 							<NavigationMenuLink asChild>
-								<Link href={item.href ?? "#"} className="px-2 py-2 text-base">
+								<Link
+									href={item.href ?? "#"}
+									className="px-[19px] py-[26px] text-base leading-[1.65] text-[#09090b] hover:bg-transparent hover:text-[#09090b]"
+								>
 									{item.title}
 								</Link>
 							</NavigationMenuLink>
@@ -195,11 +212,11 @@ function MegaMenuDropdown({ item }: { item: MegaMenuItem }) {
 	return (
 		<div
 			className={cn(
-				"grid min-h-[240px] overflow-hidden rounded-b-xl bg-white text-[#132238] shadow-[0_16px_28px_rgba(15,23,42,0.2)] dark:bg-zinc-950 dark:text-zinc-100",
+				"grid min-h-[238px] overflow-hidden rounded-b-xl bg-[#e6ebf1] text-[#1a1f36] shadow-[0_10px_9px_rgba(0,0,0,0.18)]",
 				menuLayout === "wide" &&
-					"h-[444px] w-[1122px] grid-cols-[308px_407px_407px]",
+					"h-[444px] w-[1122px] grid-cols-[306px_423px_393px]",
 				menuLayout === "medium" &&
-					"w-[954px] grid-cols-[268px_343px_343px]",
+					"w-[954px] grid-cols-[286px_414px_254px]",
 			)}
 		>
 			<MenuRail
@@ -212,7 +229,7 @@ function MegaMenuDropdown({ item }: { item: MegaMenuItem }) {
 			{item.promo && (
 				<PromoPanel
 					promo={item.promo}
-					variant={menuLayout === "wide" ? "default" : "compact"}
+					variant={menuLayout === "wide" ? "default" : "medium"}
 				/>
 			)}
 		</div>
@@ -228,15 +245,20 @@ function CompactMenuDropdown({
 	promo?: MegaMenuPromo;
 	layout: MegaMenuItem["layout"];
 }) {
+	const compactFrameClass =
+		"h-[242px] w-[566px] grid-cols-[261px_52px_201px_52px]";
+
 	return (
 		<div
 			className={cn(
-				"grid overflow-hidden rounded-b-xl bg-white text-[#132238] shadow-[0_16px_28px_rgba(15,23,42,0.2)] dark:bg-zinc-950 dark:text-zinc-100",
-				layout === "compact" && "w-[568px] grid-cols-[260px_308px]",
+				"grid overflow-hidden rounded-b-xl bg-[#e6ebf1] text-[#1a1f36] shadow-[0_10px_9px_rgba(0,0,0,0.18)]",
+				layout === "compact" && compactFrameClass,
 			)}
 		>
 			<LinkListPanel panel={panel} />
+			<div aria-hidden="true" />
 			{promo && <PromoPanel promo={promo} variant="compact" />}
+			<div aria-hidden="true" />
 		</div>
 	);
 }
@@ -255,11 +277,11 @@ function MenuRail({
 	return (
 		<div
 			className={cn(
-				"border-r border-[#dfe5ec] bg-white px-[50px] py-10 dark:border-white/10 dark:bg-zinc-950",
+				"border-r border-[#e6ebf1] bg-white px-[50px] py-10",
 				!hasRail && "border-r-0",
 			)}
 		>
-			<div className="flex flex-col gap-5">
+			<div className="flex flex-col items-start gap-6">
 				{panels.map((panel) => {
 					const isActive = panel.id === activePanelId;
 
@@ -278,13 +300,13 @@ function MenuRail({
 							onFocus={() => onActivePanelChange(panel.id)}
 							onMouseEnter={() => onActivePanelChange(panel.id)}
 							className={cn(
-								"flex min-h-8 items-center justify-between rounded-md px-0 py-1 text-left text-base font-normal text-[#172336] transition-colors hover:text-[#05a779] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#10ad7a]/30",
-								isActive && "font-medium text-[#05a779]",
+								"flex min-h-[26px] cursor-pointer items-center gap-3 rounded-md px-0 py-0 text-left text-base font-medium leading-[1.6] text-[#1a1f36] transition-colors hover:text-[#1fa971] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1fa971]/30",
+								isActive && "font-bold text-[#1fa971]",
 							)}
 						>
-							<span>{panel.title}</span>
+							<span className="whitespace-nowrap">{panel.title}</span>
 							{isActive && (
-								<ChevronRight className="size-4" aria-hidden="true" />
+								<ChevronRight className="size-6 shrink-0" aria-hidden="true" />
 							)}
 						</button>
 					);
@@ -296,13 +318,13 @@ function MenuRail({
 
 function MenuPanel({ panel }: { panel: MegaMenuPanel }) {
 	return (
-		<div className="border-r border-[#dfe5ec] bg-white px-[50px] py-10 dark:border-white/10 dark:bg-zinc-950">
+		<div className="border-r border-[#e6ebf1] bg-white px-[50px] py-10">
 			{panel.eyebrow && (
-				<div className="mb-7 inline-flex border-b border-[#d9dde3] pb-3 text-xs font-semibold uppercase text-[#067d60]">
+				<div className="mb-7 inline-flex border-b border-[#e4e4e7] pb-2 text-xs font-bold uppercase leading-[1.2] tracking-[0.12em] text-[#0e5f43]">
 					{panel.eyebrow}
 				</div>
 			)}
-			<div className="grid gap-5">
+			<div className="grid gap-0">
 				{panel.items.map((link) => (
 					<MegaMenuListLink key={link.href} link={link} />
 				))}
@@ -313,8 +335,8 @@ function MenuPanel({ panel }: { panel: MegaMenuPanel }) {
 
 function LinkListPanel({ panel }: { panel: MegaMenuPanel }) {
 	return (
-		<div className="bg-white px-[60px] py-[52px] dark:bg-zinc-950">
-			<div className="grid gap-5">
+		<div className="bg-white px-[50px] py-10">
+			<div className="grid gap-0">
 				{panel.items.map((link) => (
 					<MegaMenuListLink key={link.href} link={link} />
 				))}
@@ -330,12 +352,12 @@ function MegaMenuListLink({ link }: { link: MegaMenuLink }) {
 		<NavigationMenuLink asChild>
 			<Link
 				href={link.href}
-				className="group flex min-h-9 items-center gap-4 rounded-md p-1 text-base text-[#344256] hover:bg-zinc-50 hover:text-[#05a779] focus:bg-zinc-50 focus:text-[#05a779] dark:text-zinc-300 dark:hover:bg-white/10"
+				className="group flex min-h-[54px] cursor-pointer items-center gap-4 rounded-md p-3 text-base font-medium leading-[1.6] text-[#425466] hover:bg-zinc-50 hover:text-[#1fa971] focus:bg-zinc-50 focus:text-[#1fa971]"
 			>
-				<span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[#d9dde3] bg-white text-[#202938] transition-colors group-hover:border-[#ccefe5] group-hover:text-[#05a779] dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-200">
-					<Icon className="size-4" aria-hidden="true" />
+				<span className="flex size-[30px] shrink-0 items-center justify-center rounded-[4.286px] border border-[#e4e4e7] bg-white text-[#1a1f36] transition-colors group-hover:border-[#ccefe5] group-hover:text-[#1fa971]">
+					<Icon className="size-[18px]" aria-hidden="true" />
 				</span>
-				<span className="leading-snug">{link.title}</span>
+				<span className="whitespace-nowrap leading-snug">{link.title}</span>
 			</Link>
 		</NavigationMenuLink>
 	);
@@ -346,50 +368,34 @@ function PromoPanel({
 	variant = "default",
 }: {
 	promo: MegaMenuPromo;
-	variant?: "default" | "compact";
+	variant?: "default" | "medium" | "compact";
 }) {
+	const isDefault = variant === "default";
+	const isMedium = variant === "medium";
+
 	return (
 		<Link
 			href={promo.href}
+			aria-label={promo.title}
 			className={cn(
-				"flex h-full items-center justify-center bg-[#e6ebf1] transition-colors hover:bg-[#dfe6ee] dark:bg-zinc-900 dark:hover:bg-zinc-800",
-				variant === "compact" ? "px-2 py-7" : "px-[52px] py-0",
+				"flex h-full cursor-pointer items-center justify-center transition-colors",
+				isDefault && "bg-[#e6ebf1] px-[52px] py-0 hover:bg-[#dfe6ee]",
+				isMedium && "bg-[#e6ebf1] px-[21.5px] py-0 hover:bg-[#dfe6ee]",
+				variant === "compact" && "bg-transparent p-0",
 			)}
 		>
-			<div
+			<Image
+				src="/frame.png"
+				alt=""
+				width={290}
+				height={275}
 				className={cn(
-					"flex h-[274.33px] w-[289.31px] flex-col items-start gap-[20.59px] rounded-[4.11726px] border border-[#e4e4e7] bg-white p-[18.5277px] shadow-sm dark:border-white/10 dark:bg-zinc-950",
+					"object-contain",
+					isDefault && "h-[274px] w-[289px]",
+					isMedium && "h-[199px] w-[211px]",
+					variant === "compact" && "h-[191px] w-[201px]",
 				)}
-			>
-				<div className="flex h-[159.69px] w-[252.26px] flex-col justify-between rounded-[4.11726px] bg-[radial-gradient(circle_at_bottom,#b9b9b9_0,#111_42%,#000_70%)] p-2 text-white">
-					<div
-						className={cn(
-							"font-medium leading-[0.86]",
-							variant === "compact" ? "text-[32px]" : "text-[34px]",
-						)}
-					>
-						SPRING
-						<br />
-						RELEASE
-					</div>
-					<div
-						className={cn(
-							"font-light leading-none",
-							variant === "compact" ? "text-[36px]" : "text-[38px]",
-						)}
-					>
-						2026
-					</div>
-				</div>
-				<div className="grid w-[252.26px] gap-[6.18px]">
-					<div className="text-[24.7036px] font-medium leading-[1.2] text-[#18181b] dark:text-white">
-						{promo.title}
-					</div>
-					<div className="text-[16.469px] leading-[1.65] text-[#3f3f46]/80 dark:text-zinc-400">
-						{promo.description}
-					</div>
-				</div>
-			</div>
+			/>
 		</Link>
 	);
 }
@@ -409,16 +415,25 @@ function MobileMenu({ config }: { config: MegaMenuConfig }) {
 				</Button>
 			</SheetTrigger>
 			<SheetContent
-				className="w-[min(420px,92vw)] overflow-y-auto"
+				className={cn(
+					"w-[min(420px,92vw)] overflow-y-auto",
+					figmaMenuFont,
+				)}
 				showCloseButton={false}
 			>
 				<div className="flex items-center justify-between border-b px-5 py-4">
 					<Link
 						href={config.brand.href}
-						className="flex items-center gap-2 text-lg font-black text-[#08211d] dark:text-white"
+						className="flex items-center"
+						aria-label={`${config.brand.name} home`}
 					>
-						<BrandMark className="size-7" />
-						<span>{config.brand.name}</span>
+						<Image
+							src="/dentiralogo.png"
+							alt={config.brand.name}
+							width={164}
+							height={29}
+							className="h-[24px] w-[136px] object-contain"
+						/>
 					</Link>
 					<SheetClose asChild>
 						<Button
@@ -434,7 +449,7 @@ function MobileMenu({ config }: { config: MegaMenuConfig }) {
 				<nav className="grid gap-5 p-5">
 					{config.items.map((item) => (
 						<div key={item.title} className="grid gap-3">
-							<div className="text-sm font-semibold text-[#101828] dark:text-zinc-100">
+							<div className="text-sm font-semibold text-[#101828]">
 								{item.title}
 							</div>
 							{item.panels?.map((panel) => (
@@ -458,7 +473,7 @@ function MobileMenu({ config }: { config: MegaMenuConfig }) {
 											<SheetClose asChild key={link.href}>
 												<Link
 													href={link.href}
-													className="rounded-md px-2 py-2 text-sm text-[#344256] hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/10"
+													className="rounded-md px-2 py-2 text-sm text-[#344256] hover:bg-zinc-100"
 												>
 													{link.title}
 												</Link>
@@ -489,20 +504,5 @@ function MobileMenu({ config }: { config: MegaMenuConfig }) {
 				</div>
 			</SheetContent>
 		</Sheet>
-	);
-}
-
-function BrandMark({ className }: { className?: string }) {
-	return (
-		<span
-			className={cn(
-				"relative inline-flex size-10 items-center justify-center text-[#09a77b]",
-				className,
-			)}
-			aria-hidden="true"
-		>
-			<span className="absolute left-[7px] top-[7px] h-6 w-4 rotate-[-34deg] rounded-full rounded-br-sm bg-current" />
-			<span className="absolute right-[7px] top-[7px] h-6 w-4 rotate-[34deg] rounded-full rounded-bl-sm bg-current" />
-		</span>
 	);
 }
